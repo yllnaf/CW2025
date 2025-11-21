@@ -3,9 +3,14 @@ package com.comp2042;
 import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
+import com.comp2042.util.GameConstants;
 
 import java.awt.*;
 
+/**
+ * Game board implementation class responsible for managing game state, brick movement and clearing logic.
+ * Implements the Board interface to provide core game functionality.
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -16,6 +21,12 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    /**
+     * Constructor to initialize the game board.
+     * 
+     * @param width board width
+     * @param height board height
+     */
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;
@@ -85,7 +96,7 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 10);
+        currentOffset = new Point(GameConstants.INITIAL_BRICK_X, GameConstants.INITIAL_BRICK_Y);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
