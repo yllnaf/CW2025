@@ -21,14 +21,20 @@
         </VBox>
     </Group>
     
-    <!-- Score display area - positioned at top right, above game board -->
-    <VBox layoutX="240" layoutY="10" spacing="5">
-        <Label text="SCORE" styleClass="scoreLabelStyle"/>
-        <Label fx:id="scoreLabel" text="0" styleClass="scoreValueStyle"/>
-    </VBox>
+    <!-- Score and lines display area -->
+    <HBox layoutX="260" layoutY="10" spacing="15">
+        <VBox spacing="5">
+            <Label text="SCORE" styleClass="scoreLabelStyle"/>
+            <Label fx:id="scoreLabel" text="0" styleClass="scoreValueStyle"/>
+        </VBox>
+        <VBox spacing="5">
+            <Label text="LINES" styleClass="scoreLabelStyle"/>
+            <Label fx:id="linesLabel" text="0" styleClass="scoreValueStyle"/>
+        </VBox>
+    </HBox>
     
     <!-- Next brick preview area - positioned below score display -->
-    <VBox layoutX="240" layoutY="70" spacing="5">
+    <VBox layoutX="260" layoutY="70" spacing="5">
         <Label text="NEXT" styleClass="scoreLabelStyle"/>
         <GridPane fx:id="nextBrickPanel" hgap="1" vgap="1" styleClass="nextBrick"/>
     </VBox>

@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 public final class Score {
 
     private final IntegerProperty score = new SimpleIntegerProperty(0);
+    private final IntegerProperty linesCleared = new SimpleIntegerProperty(0);
 
     /**
      * Gets the score property for JavaFX binding.
@@ -18,6 +19,15 @@ public final class Score {
      */
     public IntegerProperty scoreProperty() {
         return score;
+    }
+
+    /**
+     * Gets the cleared lines property for JavaFX binding.
+     *
+     * @return cleared lines property
+     */
+    public IntegerProperty linesProperty() {
+        return linesCleared;
     }
 
     /**
@@ -30,10 +40,20 @@ public final class Score {
     }
 
     /**
+     * Adds cleared lines count.
+     *
+     * @param lines number of cleared lines
+     */
+    public void addLines(int lines) {
+        linesCleared.setValue(linesCleared.getValue() + lines);
+    }
+
+    /**
      * Resets the score to 0.
      */
     public void reset() {
         score.setValue(0);
+        linesCleared.setValue(0);
     }
     
     /**
@@ -43,5 +63,14 @@ public final class Score {
      */
     public int getValue() {
         return score.getValue();
+    }
+
+    /**
+     * Gets the cleared lines count.
+     *
+     * @return cleared lines value
+     */
+    public int getLinesCleared() {
+        return linesCleared.getValue();
     }
 }

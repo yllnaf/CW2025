@@ -23,6 +23,7 @@ public class GameController implements InputEventListener {
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
+        viewGuiController.bindLines(board.getScore().linesProperty());
     }
 
     /**
@@ -44,6 +45,7 @@ public class GameController implements InputEventListener {
             // Only add score when lines are actually cleared
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
+                board.getScore().addLines(clearRow.getLinesRemoved());
             }
             
             // Create new brick, if failed then game over

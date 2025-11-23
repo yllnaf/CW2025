@@ -47,6 +47,9 @@ public class GuiController implements Initializable {
     private Label scoreLabel;
 
     @FXML
+    private Label linesLabel;
+
+    @FXML
     private GridPane nextBrickPanel;
 
     private Rectangle[][] displayMatrix;
@@ -292,6 +295,17 @@ public class GuiController implements Initializable {
         if (scoreLabel != null && integerProperty != null) {
             // Bind the label text to the score property, updating automatically when score changes
             scoreLabel.textProperty().bind(integerProperty.asString());
+        }
+    }
+
+    /**
+     * Binds cleared lines property to the lines label for real-time display.
+     *
+     * @param integerProperty cleared lines property
+     */
+    public void bindLines(IntegerProperty integerProperty) {
+        if (linesLabel != null && integerProperty != null) {
+            linesLabel.textProperty().bind(integerProperty.asString());
         }
     }
     
