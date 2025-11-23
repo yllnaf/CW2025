@@ -21,6 +21,10 @@
         </VBox>
     </Group>
     
+    <!-- Pause indicator -->
+    <Label fx:id="pauseLabel" text="PAUSED" layoutX="80" layoutY="200"
+           styleClass="pauseLabelStyle" visible="false"/>
+    
     <!-- Score and lines display area -->
     <HBox layoutX="260" layoutY="10" spacing="15">
         <VBox spacing="5">

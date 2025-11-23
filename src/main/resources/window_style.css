@@ -85,3 +85,10 @@
     -fx-font-weight: bold;
     -fx-alignment: center;
 }
+
+.pauseLabelStyle {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 28px;
+    -fx-text-fill: #fffb91;
+    -fx-font-weight: bold;
+}

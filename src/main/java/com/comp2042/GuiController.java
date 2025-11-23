@@ -52,6 +52,9 @@ public class GuiController implements Initializable {
     @FXML
     private GridPane nextBrickPanel;
 
+    @FXML
+    private Label pauseLabel;
+
     private Rectangle[][] displayMatrix;
 
     private InputEventListener eventListener;
@@ -74,6 +77,11 @@ public class GuiController implements Initializable {
         gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.P) {
+                    pauseGame(null);
+                    keyEvent.consume();
+                    return;
+                }
                 if (!isPause.getValue() && !isGameOver.getValue()) {
                     handleGameKeyPress(keyEvent);
                 }
@@ -83,6 +91,7 @@ public class GuiController implements Initializable {
             }
         });
         gameOverPanel.setVisible(false);
+        showPauseIndicator(false);
 
         final Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
@@ -337,6 +346,8 @@ public class GuiController implements Initializable {
     public void gameOver() {
         timeLine.stop();
         gameOverPanel.setVisible(true);
+        showPauseIndicator(false);
+        isPause.setValue(false);
         isGameOver.setValue(true);
     }
 
@@ -352,6 +363,7 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
         timeLine.play();
         isPause.setValue(false);
+        showPauseIndicator(false);
         isGameOver.setValue(false);
     }
 
@@ -361,7 +373,43 @@ public class GuiController implements Initializable {
      * @param actionEvent action event
      */
     public void pauseGame(ActionEvent actionEvent) {
+        if (timeLine == null) {
+            return;
+        }
+        if (isPause.getValue()) {
+            resumeGame();
+            return;
+        }
+        if (isGameOver.getValue()) {
+            return;
+        }
+        timeLine.pause();
+        isPause.setValue(true);
+        showPauseIndicator(true);
         gamePanel.requestFocus();
-        // TODO: Implement pause/resume functionality
+    }
+
+    /**
+     * Resumes the game if it is currently paused.
+     */
+    private void resumeGame() {
+        if (timeLine == null) {
+            return;
+        }
+        timeLine.play();
+        isPause.setValue(false);
+        showPauseIndicator(false);
+        gamePanel.requestFocus();
+    }
+
+    /**
+     * Shows or hides the pause indicator label.
+     *
+     * @param visible true to show, false to hide
+     */
+    private void showPauseIndicator(boolean visible) {
+        if (pauseLabel != null) {
+            pauseLabel.setVisible(visible);
+        }
     }
 }
