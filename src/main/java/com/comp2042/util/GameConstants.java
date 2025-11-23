@@ -21,7 +21,7 @@ public final class GameConstants {
     
     // Display related
     public static final int BRICK_SIZE = 20;
-    public static final int GAME_WINDOW_WIDTH = 350; // Increased to accommodate score display
+    public static final int GAME_WINDOW_WIDTH = 420; // Increased to accommodate expanded side panel
     public static final int GAME_WINDOW_HEIGHT = 510;
     public static final int DISPLAY_OFFSET_Y = -42;
     

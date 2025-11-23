@@ -1,6 +1,7 @@
 package com.comp2042;
 
 import com.comp2042.util.GameConstants;
+import com.comp2042.util.HighScoreStorage;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -13,6 +14,8 @@ public final class Score {
     private final IntegerProperty score = new SimpleIntegerProperty(0);
     private final IntegerProperty linesCleared = new SimpleIntegerProperty(0);
     private final IntegerProperty level = new SimpleIntegerProperty(1);
+    private final IntegerProperty highScore = new SimpleIntegerProperty(HighScoreStorage.loadHighScore());
+    private boolean newHighScoreAchieved;
 
     /**
      * Gets the score property for JavaFX binding.
@@ -48,6 +51,7 @@ public final class Score {
      */
     public void add(int points) {
         score.setValue(score.getValue() + points);
+        checkAndUpdateHighScore();
     }
 
     /**
@@ -67,6 +71,7 @@ public final class Score {
         score.setValue(0);
         linesCleared.setValue(0);
         level.setValue(1);
+        newHighScoreAchieved = false;
     }
     
     /**
@@ -96,11 +101,46 @@ public final class Score {
         return level.getValue();
     }
 
+    /**
+     * Gets the high score property.
+     *
+     * @return high score property
+     */
+    public IntegerProperty highScoreProperty() {
+        return highScore;
+    }
+
+    /**
+     * Gets the current high score value.
+     *
+     * @return stored high score
+     */
+    public int getHighScore() {
+        return highScore.getValue();
+    }
+
+    /**
+     * Indicates whether a new high score was achieved in the current game session.
+     *
+     * @return true if a new high score was achieved, otherwise false
+     */
+    public boolean isNewHighScoreAchieved() {
+        return newHighScoreAchieved;
+    }
+
     private void updateLevel() {
         int cleared = linesCleared.getValue();
         int newLevel = Math.max(1, (cleared / GameConstants.LINES_PER_LEVEL) + 1);
         if (newLevel != level.getValue()) {
             level.setValue(newLevel);
+        }
+    }
+
+    private void checkAndUpdateHighScore() {
+        if (score.getValue() > highScore.getValue()) {
+            highScore.setValue(score.getValue());
+            newHighScoreAchieved = true;
+            HighScoreStorage.saveHighScore(score.getValue());
         }
     }
 }

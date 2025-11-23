@@ -26,7 +26,7 @@
            styleClass="pauseLabelStyle" visible="false"/>
     
     <!-- Score and lines display area -->
-    <HBox layoutX="245" layoutY="10" spacing="15">
+    <HBox layoutX="280" layoutY="10" spacing="15">
         <VBox spacing="5">
             <Label text="SCORE" styleClass="scoreLabelStyle"/>
             <Label fx:id="scoreLabel" text="0" styleClass="scoreValueStyle"/>
@@ -39,10 +39,14 @@
             <Label text="LEVEL" styleClass="scoreLabelStyle"/>
             <Label fx:id="levelLabel" text="1" styleClass="scoreValueStyle"/>
         </VBox>
+        <VBox spacing="5">
+            <Label text="BEST" styleClass="scoreLabelStyle"/>
+            <Label fx:id="highScoreLabel" text="0" styleClass="scoreValueStyle"/>
+        </VBox>
     </HBox>
     
     <!-- Next brick preview area - positioned below score display -->
-    <VBox layoutX="260" layoutY="70" spacing="5">
+    <VBox layoutX="285" layoutY="70" spacing="5">
         <Label text="NEXT" styleClass="scoreLabelStyle"/>
         <GridPane fx:id="nextBrickPanel" hgap="1" vgap="1" styleClass="nextBrick"/>
     </VBox>

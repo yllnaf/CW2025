@@ -25,6 +25,7 @@ public class GameController implements InputEventListener {
         viewGuiController.bindScore(board.getScore().scoreProperty());
         viewGuiController.bindLines(board.getScore().linesProperty());
         viewGuiController.bindLevel(board.getScore().levelProperty());
+        viewGuiController.bindHighScore(board.getScore().highScoreProperty());
         board.getScore().levelProperty().addListener((observable, oldValue, newValue) ->
                 viewGuiController.updateGameSpeed(calculateIntervalForLevel(newValue.intValue())));
         viewGuiController.updateGameSpeed(calculateIntervalForLevel(board.getScore().getLevel()));
@@ -54,7 +55,11 @@ public class GameController implements InputEventListener {
             
             // Create new brick, if failed then game over
             if (board.createNewBrick()) {
-                viewGuiController.gameOver();
+                Score currentScore = board.getScore();
+                viewGuiController.gameOver(
+                        currentScore.getValue(),
+                        currentScore.getHighScore(),
+                        currentScore.isNewHighScoreAchieved());
             }
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());

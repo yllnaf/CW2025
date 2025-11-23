@@ -53,6 +53,9 @@ public class GuiController implements Initializable {
     private Label levelLabel;
 
     @FXML
+    private Label highScoreLabel;
+
+    @FXML
     private GridPane nextBrickPanel;
 
     @FXML
@@ -333,6 +336,17 @@ public class GuiController implements Initializable {
     }
 
     /**
+     * Binds high score property to the high score label.
+     *
+     * @param integerProperty high score property
+     */
+    public void bindHighScore(IntegerProperty integerProperty) {
+        if (highScoreLabel != null && integerProperty != null) {
+            highScoreLabel.textProperty().bind(integerProperty.asString());
+        }
+    }
+
+    /**
      * Updates the auto-drop speed by adjusting the timeline playback rate.
      *
      * @param intervalMillis desired drop interval in milliseconds
@@ -370,8 +384,9 @@ public class GuiController implements Initializable {
     /**
      * Handles game over.
      */
-    public void gameOver() {
+    public void gameOver(int finalScore, int highScore, boolean isNewRecord) {
         timeLine.stop();
+        gameOverPanel.updateScores(finalScore, highScore, isNewRecord);
         gameOverPanel.setVisible(true);
         showPauseIndicator(false);
         isPause.setValue(false);
