@@ -97,7 +97,15 @@ public class SimpleBoard implements Board {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         currentOffset = new Point(GameConstants.INITIAL_BRICK_X, GameConstants.INITIAL_BRICK_Y);
-        return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+        
+        // Check if the new brick can be placed at the initial position
+        // Game over only if the brick cannot be placed at the top (spawn position)
+        boolean cannotPlace = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), 
+                (int) currentOffset.getX(), (int) currentOffset.getY());
+        
+        // Game over only if the brick overlaps at the spawn position (top of board)
+        // This means blocks have reached the top
+        return cannotPlace;
     }
 
     @Override

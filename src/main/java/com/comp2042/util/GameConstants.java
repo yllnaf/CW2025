@@ -15,9 +15,9 @@ public final class GameConstants {
     public static final int BOARD_WIDTH = 10;
     public static final int BOARD_HEIGHT = 25;
     
-    // Initial brick position
+    // Initial brick position (top of the board)
     public static final int INITIAL_BRICK_X = 4;
-    public static final int INITIAL_BRICK_Y = 10;
+    public static final int INITIAL_BRICK_Y = 0;
     
     // Display related
     public static final int BRICK_SIZE = 20;
