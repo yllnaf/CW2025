@@ -27,10 +27,13 @@ public final class GameConstants {
     
     // Game loop
     public static final int GAME_LOOP_INTERVAL_MS = 400;
+    public static final int GAME_LOOP_INTERVAL_DECREMENT_MS = 30;
+    public static final int GAME_LOOP_MIN_INTERVAL_MS = 180;
     
     // Score calculation
     public static final int BASE_SCORE_PER_DOWN = 1;
     public static final int BASE_SCORE_PER_LINE = 50;
+    public static final int LINES_PER_LEVEL = 5;
     
     // Color indices (corresponding to brick types)
     public static final int COLOR_EMPTY = 0;

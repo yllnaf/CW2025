@@ -50,6 +50,9 @@ public class GuiController implements Initializable {
     private Label linesLabel;
 
     @FXML
+    private Label levelLabel;
+
+    @FXML
     private GridPane nextBrickPanel;
 
     @FXML
@@ -316,6 +319,30 @@ public class GuiController implements Initializable {
         if (linesLabel != null && integerProperty != null) {
             linesLabel.textProperty().bind(integerProperty.asString());
         }
+    }
+
+    /**
+     * Binds level property to the level label for real-time display.
+     *
+     * @param integerProperty level property
+     */
+    public void bindLevel(IntegerProperty integerProperty) {
+        if (levelLabel != null && integerProperty != null) {
+            levelLabel.textProperty().bind(integerProperty.asString());
+        }
+    }
+
+    /**
+     * Updates the auto-drop speed by adjusting the timeline playback rate.
+     *
+     * @param intervalMillis desired drop interval in milliseconds
+     */
+    public void updateGameSpeed(int intervalMillis) {
+        if (timeLine == null || intervalMillis <= 0) {
+            return;
+        }
+        double rate = (double) GameConstants.GAME_LOOP_INTERVAL_MS / intervalMillis;
+        timeLine.setRate(rate);
     }
     
     /**

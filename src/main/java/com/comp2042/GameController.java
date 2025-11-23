@@ -24,6 +24,10 @@ public class GameController implements InputEventListener {
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
         viewGuiController.bindLines(board.getScore().linesProperty());
+        viewGuiController.bindLevel(board.getScore().levelProperty());
+        board.getScore().levelProperty().addListener((observable, oldValue, newValue) ->
+                viewGuiController.updateGameSpeed(calculateIntervalForLevel(newValue.intValue())));
+        viewGuiController.updateGameSpeed(calculateIntervalForLevel(board.getScore().getLevel()));
     }
 
     /**
@@ -104,5 +108,11 @@ public class GameController implements InputEventListener {
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         // Refresh current brick and next brick display
         viewGuiController.refreshBrick(board.getViewData());
+    }
+
+    private int calculateIntervalForLevel(int level) {
+        int interval = GameConstants.GAME_LOOP_INTERVAL_MS -
+                (Math.max(0, level - 1) * GameConstants.GAME_LOOP_INTERVAL_DECREMENT_MS);
+        return Math.max(interval, GameConstants.GAME_LOOP_MIN_INTERVAL_MS);
     }
 }
