@@ -46,11 +46,16 @@ public class GuiController implements Initializable {
     @FXML
     private Label scoreLabel;
 
+    @FXML
+    private GridPane nextBrickPanel;
+
     private Rectangle[][] displayMatrix;
 
     private InputEventListener eventListener;
 
     private Rectangle[][] rectangles;
+
+    private Rectangle[][] nextBrickRectangles;
 
     private Timeline timeLine;
 
@@ -115,6 +120,9 @@ public class GuiController implements Initializable {
         // Set brick panel position
         updateBrickPanelPosition(brick);
 
+        // Initialize next brick preview display
+        initNextBrickDisplay(brick);
+
         // Initialize game loop timeline
         timeLine = new Timeline(new KeyFrame(
                 Duration.millis(GameConstants.GAME_LOOP_INTERVAL_MS),
@@ -157,12 +165,62 @@ public class GuiController implements Initializable {
      * 
      * @param brick brick data
      */
-    private void refreshBrick(ViewData brick) {
+    public void refreshBrick(ViewData brick) {
         if (!isPause.getValue()) {
             updateBrickPanelPosition(brick);
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+                }
+            }
+            // Update next brick preview
+            refreshNextBrickDisplay(brick);
+        }
+    }
+
+    /**
+     * Initializes the next brick preview display.
+     * 
+     * @param brick brick data containing next brick information
+     */
+    private void initNextBrickDisplay(ViewData brick) {
+        // Clear existing children if any
+        nextBrickPanel.getChildren().clear();
+        
+        int[][] nextBrickData = brick.getNextBrickData();
+        if (nextBrickData != null && nextBrickData.length > 0) {
+            nextBrickRectangles = new Rectangle[nextBrickData.length][nextBrickData[0].length];
+            for (int i = 0; i < nextBrickData.length; i++) {
+                for (int j = 0; j < nextBrickData[i].length; j++) {
+                    Rectangle rectangle = new Rectangle(GameConstants.BRICK_SIZE, GameConstants.BRICK_SIZE);
+                    setRectangleData(nextBrickData[i][j], rectangle);
+                    nextBrickRectangles[i][j] = rectangle;
+                    nextBrickPanel.add(rectangle, j, i);
+                }
+            }
+        }
+    }
+
+    /**
+     * Refreshes the next brick preview display.
+     * If the next brick size has changed, reinitialize the display.
+     * 
+     * @param brick brick data containing next brick information
+     */
+    private void refreshNextBrickDisplay(ViewData brick) {
+        int[][] nextBrickData = brick.getNextBrickData();
+        if (nextBrickData != null && nextBrickData.length > 0) {
+            // Check if size has changed, if so reinitialize
+            if (nextBrickRectangles == null || 
+                nextBrickRectangles.length != nextBrickData.length ||
+                (nextBrickRectangles.length > 0 && nextBrickRectangles[0].length != nextBrickData[0].length)) {
+                initNextBrickDisplay(brick);
+            } else {
+                // Update existing rectangles
+                for (int i = 0; i < nextBrickData.length && i < nextBrickRectangles.length; i++) {
+                    for (int j = 0; j < nextBrickData[i].length && j < nextBrickRectangles[i].length; j++) {
+                        setRectangleData(nextBrickData[i][j], nextBrickRectangles[i][j]);
+                    }
                 }
             }
         }
