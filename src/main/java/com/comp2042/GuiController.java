@@ -4,6 +4,7 @@ import com.comp2042.util.ColorMapper;
 import com.comp2042.util.GameConstants;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -442,6 +443,18 @@ public class GuiController implements Initializable {
         isPause.setValue(false);
         showPauseIndicator(false);
         gamePanel.requestFocus();
+    }
+
+    /**
+     * Exits the game and closes the application window.
+     *
+     * @param actionEvent action event
+     */
+    public void exitGame(ActionEvent actionEvent) {
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+        Platform.exit();
     }
 
     /**
