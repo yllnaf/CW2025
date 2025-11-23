@@ -41,6 +41,7 @@ public class GameController implements InputEventListener {
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
             
+            // Only add score when lines are actually cleared
             if (clearRow.getLinesRemoved() > 0) {
                 board.getScore().add(clearRow.getScoreBonus());
             }
@@ -51,11 +52,6 @@ public class GameController implements InputEventListener {
             }
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
-        } else {
-            // Give score reward when user manually moves down
-            if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(GameConstants.BASE_SCORE_PER_DOWN);
-            }
         }
         
         return new DownData(clearRow, board.getViewData());
