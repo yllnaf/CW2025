@@ -7,12 +7,20 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+/**
+ * Random brick generator implementation that creates bricks in random order.
+ * Maintains a queue of upcoming bricks for preview functionality.
+ */
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
 
     private final Deque<Brick> nextBricks = new ArrayDeque<>();
 
+    /**
+     * Constructor that initializes the brick generator with all standard brick types
+     * and pre-generates initial bricks in the queue.
+     */
     public RandomBrickGenerator() {
         brickList = new ArrayList<>();
         brickList.add(new IBrick());
@@ -26,12 +34,23 @@ public class RandomBrickGenerator implements BrickGenerator {
         nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
     }
 
+    /**
+     * Gets the current brick and advances to the next one in the queue.
+     * Ensures the queue maintains at least two bricks.
+     *
+     * @return current brick instance
+     */
     @Override
     public Brick getBrick() {
         ensureQueueSize();
         return nextBricks.poll();
     }
 
+    /**
+     * Gets the next brick without consuming it from the queue.
+     *
+     * @return next brick instance
+     */
     @Override
     public Brick getNextBrick() {
         return nextBricks.peek();

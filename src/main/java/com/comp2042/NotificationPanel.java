@@ -14,8 +14,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+/**
+ * Notification panel for displaying temporary messages with animation effects.
+ * Used to show score notifications and other game events.
+ */
 public class NotificationPanel extends BorderPane {
 
+    /**
+     * Constructor to create a notification panel with the specified text.
+     *
+     * @param text notification message to display
+     */
     public NotificationPanel(String text) {
         setMinHeight(200);
         setMinWidth(220);
@@ -28,6 +37,12 @@ public class NotificationPanel extends BorderPane {
 
     }
 
+    /**
+     * Displays the notification with fade and translate animations.
+     * Automatically removes itself from the parent list after animation completes.
+     *
+     * @param list observable list of nodes to remove this panel from after animation
+     */
     public void showScore(ObservableList<Node> list) {
         FadeTransition ft = new FadeTransition(Duration.millis(2000), this);
         TranslateTransition tt = new TranslateTransition(Duration.millis(2500), this);

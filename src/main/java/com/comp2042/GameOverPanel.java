@@ -5,12 +5,20 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * Game over panel that displays when the game ends.
+ * Shows final score, high score, and new record notification.
+ */
 public class GameOverPanel extends BorderPane {
 
     private final Label scoreValueLabel = new Label();
     private final Label highScoreValueLabel = new Label();
     private final Label newRecordLabel = new Label("NEW RECORD!");
 
+    /**
+     * Constructor that initializes the game over panel UI.
+     * Sets up labels for score display and styling.
+     */
     public GameOverPanel() {
         final Label gameOverLabel = new Label("GAME OVER");
         gameOverLabel.getStyleClass().add("gameOverStyle");

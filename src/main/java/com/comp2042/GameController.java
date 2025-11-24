@@ -123,6 +123,12 @@ public class GameController implements InputEventListener {
         viewGuiController.refreshBrick(board.getViewData());
     }
 
+    /**
+     * Saves the current game state with the provided name.
+     *
+     * @param saveName user provided save name
+     * @return true if save succeeded, false otherwise
+     */
     @Override
     public boolean saveGame(String saveName) {
         String displayName = (saveName == null || saveName.isBlank())
@@ -139,6 +145,12 @@ public class GameController implements InputEventListener {
         }
     }
 
+    /**
+     * Loads a saved game identified by the file-safe name.
+     *
+     * @param fileSafeName sanitized save identifier
+     * @return true if load succeeded, false otherwise
+     */
     @Override
     public boolean loadGame(String fileSafeName) {
         try {
@@ -158,16 +170,34 @@ public class GameController implements InputEventListener {
         }
     }
 
+    /**
+     * Lists all available saved games.
+     *
+     * @return list of save metadata
+     */
     @Override
     public List<GameSaveMetadata> listSavedGames() {
         return GameSaveManager.listSaves();
     }
 
+    /**
+     * Deletes a saved game identified by the file-safe name.
+     *
+     * @param fileSafeName sanitized save identifier
+     * @return true if deletion succeeded, false otherwise
+     */
     @Override
     public boolean deleteSave(String fileSafeName) {
         return GameSaveManager.deleteSave(fileSafeName);
     }
 
+    /**
+     * Calculates the game loop interval based on the current level.
+     * Higher levels result in faster drop speeds.
+     *
+     * @param level current game level
+     * @return interval in milliseconds (with minimum limit)
+     */
     private int calculateIntervalForLevel(int level) {
         int interval = GameConstants.GAME_LOOP_INTERVAL_MS -
                 (Math.max(0, level - 1) * GameConstants.GAME_LOOP_INTERVAL_DECREMENT_MS);

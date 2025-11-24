@@ -81,6 +81,7 @@
                     <encoding>UTF-8</encoding>
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
+                    <locale>en_US</locale>
                     <windowtitle>Tetris Game API Documentation</windowtitle>
                     <doctitle>Tetris Game API Documentation</doctitle>
                     <bottom>Copyright © 2025 COMP2042 Coursework. All rights reserved.</bottom>

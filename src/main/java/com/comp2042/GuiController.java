@@ -329,6 +329,11 @@ public class GuiController implements Initializable {
         notificationPanel.showScore(groupNotification.getChildren());
     }
 
+    /**
+     * Sets the input event listener for handling game events.
+     *
+     * @param eventListener event listener instance
+     */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
     }
