@@ -11,12 +11,14 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
@@ -70,6 +72,9 @@ public class GuiController implements Initializable {
 
     @FXML
     private Label pauseLabel;
+
+    @FXML
+    private Button pauseButton;
 
     private Rectangle[][] displayMatrix;
 
@@ -160,6 +165,7 @@ public class GuiController implements Initializable {
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
+        updatePauseButtonText();
     }
 
     /**
@@ -431,6 +437,7 @@ public class GuiController implements Initializable {
         showPauseIndicator(false);
         isPause.setValue(false);
         isGameOver.setValue(true);
+        updatePauseButtonText();
     }
 
     /**
@@ -447,6 +454,7 @@ public class GuiController implements Initializable {
         isPause.setValue(false);
         showPauseIndicator(false);
         isGameOver.setValue(false);
+        updatePauseButtonText();
     }
 
     /**
@@ -468,6 +476,7 @@ public class GuiController implements Initializable {
         timeLine.pause();
         isPause.setValue(true);
         showPauseIndicator(true);
+        updatePauseButtonText();
         gamePanel.requestFocus();
     }
 
@@ -481,6 +490,7 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(false);
         showPauseIndicator(false);
+        updatePauseButtonText();
         gamePanel.requestFocus();
     }
 
@@ -540,6 +550,26 @@ public class GuiController implements Initializable {
             }
         });
         resumeAfterDialog(wasPaused);
+        updatePauseButtonText();
+        gamePanel.requestFocus();
+    }
+
+    /**
+     * Loads a saved game chosen by the user.
+     *
+     * @param actionEvent action event
+     */
+    @FXML
+    public void loadGame(ActionEvent actionEvent) {
+        if (eventListener == null) {
+            return;
+        }
+        boolean wasPaused = pauseForDialog();
+        boolean loaded = showLoadSelectionDialog();
+        resumeAfterDialog(wasPaused);
+        if (loaded) {
+            updatePauseButtonText();
+        }
         gamePanel.requestFocus();
     }
 
@@ -561,7 +591,8 @@ public class GuiController implements Initializable {
             return;
         }
 
-        ChoiceDialog<GameSaveMetadata> dialog = new ChoiceDialog<>(saves.get(0), saves);
+        ChoiceDialog<GameSaveMetadata> dialog = new ChoiceDialog<>(saves.get(0),
+                FXCollections.observableArrayList(saves));
         dialog.setTitle("Delete Save");
         dialog.setHeaderText("Select a save to delete");
         dialog.setContentText("Saved games:");
@@ -594,6 +625,7 @@ public class GuiController implements Initializable {
         gameOverPanel.setVisible(false);
         isGameOver.setValue(false);
         showPauseIndicator(false);
+        updatePauseButtonText();
         gamePanel.requestFocus();
     }
 
@@ -614,12 +646,13 @@ public class GuiController implements Initializable {
             showInformationAlert("No Saves Found", "You have not created any saves yet.");
             return false;
         }
-        ChoiceDialog<GameSaveMetadata> dialog = new ChoiceDialog<>(saves.get(0), saves);
+        ChoiceDialog<GameSaveMetadata> dialog = new ChoiceDialog<>(saves.get(0),
+                FXCollections.observableArrayList(saves));
         dialog.setTitle("Load Game");
         dialog.setHeaderText("Select a saved game to load");
         dialog.setContentText("Saved games:");
         Optional<GameSaveMetadata> selected = dialog.showAndWait();
-        if (selected.isEmpty()) {
+        if (!selected.isPresent()) {
             return false;
         }
         boolean success = eventListener.loadGame(selected.get().getFileSafeName());
@@ -634,6 +667,7 @@ public class GuiController implements Initializable {
         if (!alreadyPaused && timeLine != null) {
             timeLine.pause();
             isPause.setValue(true);
+            updatePauseButtonText();
         }
         showPauseIndicator(false);
         return alreadyPaused;
@@ -643,6 +677,13 @@ public class GuiController implements Initializable {
         if (!wasPaused && timeLine != null) {
             timeLine.play();
             isPause.setValue(false);
+            updatePauseButtonText();
+        }
+    }
+
+    private void updatePauseButtonText() {
+        if (pauseButton != null) {
+            pauseButton.setText(isPause.getValue() ? "START" : "PAUSE");
         }
     }
 

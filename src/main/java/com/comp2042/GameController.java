@@ -143,7 +143,7 @@ public class GameController implements InputEventListener {
     public boolean loadGame(String fileSafeName) {
         try {
             Optional<GameSaveData> gameSaveData = GameSaveManager.loadGame(fileSafeName);
-            if (gameSaveData.isEmpty()) {
+            if (!gameSaveData.isPresent()) {
                 return false;
             }
             board.restoreState(gameSaveData.get());

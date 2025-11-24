@@ -57,6 +57,9 @@
 
     <!-- Control buttons -->
     <VBox layoutX="255" layoutY="260" spacing="10">
+        <Button text="NEW" onAction="#newGame" styleClass="controlButton" prefWidth="90"/>
+        <Button text="LOAD" onAction="#loadGame" styleClass="controlButton" prefWidth="90"/>
+        <Button fx:id="pauseButton" text="PAUSE" onAction="#pauseGame" styleClass="controlButton" prefWidth="90"/>
         <Button text="SAVE" onAction="#saveGame" styleClass="controlButton" prefWidth="90"/>
         <Button text="DELETE" onAction="#deleteSave" styleClass="controlButton" prefWidth="90"/>
         <Button text="EXIT" onAction="#exitGame" styleClass="controlButton" prefWidth="90"/>
