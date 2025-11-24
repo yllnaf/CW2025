@@ -542,6 +542,50 @@ public class GuiController implements Initializable {
     }
 
     /**
+     * Deletes the selected save after user confirmation.
+     *
+     * @param actionEvent action event
+     */
+    @FXML
+    public void deleteSave(ActionEvent actionEvent) {
+        if (eventListener == null) {
+            return;
+        }
+        boolean wasPaused = pauseForDialog();
+        List<GameSaveMetadata> saves = eventListener.listSavedGames();
+        if (saves.isEmpty()) {
+            showInformationAlert("No Saves Found", "There are no saves to delete.");
+            resumeAfterDialog(wasPaused);
+            return;
+        }
+
+        ChoiceDialog<GameSaveMetadata> dialog = new ChoiceDialog<>(saves.get(0), saves);
+        dialog.setTitle("Delete Save");
+        dialog.setHeaderText("Select a save to delete");
+        dialog.setContentText("Saved games:");
+        Optional<GameSaveMetadata> selected = dialog.showAndWait();
+        if (selected.isPresent()) {
+            Alert confirm = new Alert(Alert.AlertType.WARNING,
+                    "This action cannot be undone. Delete the selected save?",
+                    ButtonType.CANCEL,
+                    ButtonType.OK);
+            confirm.setTitle("Confirm Delete");
+            confirm.setHeaderText(selected.get().getDisplayName());
+            Optional<ButtonType> response = confirm.showAndWait();
+            if (response.isPresent() && response.get() == ButtonType.OK) {
+                boolean deleted = eventListener.deleteSave(selected.get().getFileSafeName());
+                if (deleted) {
+                    showInformationAlert("Save Deleted", "Selected save has been deleted.");
+                } else {
+                    showErrorAlert("Delete Failed", "Unable to delete the selected save.");
+                }
+            }
+        }
+        resumeAfterDialog(wasPaused);
+        gamePanel.requestFocus();
+    }
+
+    /**
      * Resets overlays and focus after a game has been loaded.
      */
     public void onGameLoaded() {

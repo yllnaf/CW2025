@@ -38,4 +38,12 @@ public interface InputEventListener {
      * @return list of save metadata
      */
     List<GameSaveMetadata> listSavedGames();
+
+    /**
+     * Deletes a saved game identified by the provided file-safe name.
+     *
+     * @param fileSafeName sanitized save identifier
+     * @return true if deletion succeeded
+     */
+    boolean deleteSave(String fileSafeName);
 }

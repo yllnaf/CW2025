@@ -163,6 +163,11 @@ public class GameController implements InputEventListener {
         return GameSaveManager.listSaves();
     }
 
+    @Override
+    public boolean deleteSave(String fileSafeName) {
+        return GameSaveManager.deleteSave(fileSafeName);
+    }
+
     private int calculateIntervalForLevel(int level) {
         int interval = GameConstants.GAME_LOOP_INTERVAL_MS -
                 (Math.max(0, level - 1) * GameConstants.GAME_LOOP_INTERVAL_DECREMENT_MS);

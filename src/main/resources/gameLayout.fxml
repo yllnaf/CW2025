@@ -54,6 +54,7 @@
     <!-- Control buttons -->
     <VBox layoutX="295" layoutY="190" spacing="10">
         <Button text="SAVE" onAction="#saveGame" styleClass="controlButton"/>
+        <Button text="DELETE" onAction="#deleteSave" styleClass="controlButton"/>
         <Button text="EXIT" onAction="#exitGame" styleClass="controlButton"/>
     </VBox>
     

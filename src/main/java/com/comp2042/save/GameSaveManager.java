@@ -97,6 +97,22 @@ public final class GameSaveManager {
     }
 
     /**
+     * Deletes the save file associated with the provided name.
+     *
+     * @param fileSafeName sanitized name
+     * @return true if the save file was deleted
+     */
+    public static boolean deleteSave(String fileSafeName) {
+        Path path = getSaveDirectory().resolve(fileSafeName + EXTENSION);
+        try {
+            return Files.deleteIfExists(path);
+        } catch (IOException exception) {
+            System.err.println("Failed to delete save: " + exception.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Generates a default save display name using the current timestamp.
      *
      * @return default display name
