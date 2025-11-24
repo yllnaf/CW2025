@@ -1,6 +1,13 @@
 package com.comp2042;
 
+import com.comp2042.save.GameSaveData;
+import com.comp2042.save.GameSaveManager;
+import com.comp2042.save.GameSaveMetadata;
 import com.comp2042.util.GameConstants;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Game controller class responsible for coordinating game logic and user interface.
@@ -8,7 +15,7 @@ import com.comp2042.util.GameConstants;
  */
 public class GameController implements InputEventListener {
 
-    private final Board board;
+    private final SimpleBoard board;
     private final GuiController viewGuiController;
 
     /**
@@ -29,6 +36,7 @@ public class GameController implements InputEventListener {
         board.getScore().levelProperty().addListener((observable, oldValue, newValue) ->
                 viewGuiController.updateGameSpeed(calculateIntervalForLevel(newValue.intValue())));
         viewGuiController.updateGameSpeed(calculateIntervalForLevel(board.getScore().getLevel()));
+        viewGuiController.promptForStartupChoice();
     }
 
     /**
@@ -113,6 +121,46 @@ public class GameController implements InputEventListener {
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         // Refresh current brick and next brick display
         viewGuiController.refreshBrick(board.getViewData());
+    }
+
+    @Override
+    public boolean saveGame(String saveName) {
+        String displayName = (saveName == null || saveName.isBlank())
+                ? GameSaveManager.generateDefaultDisplayName()
+                : saveName.trim();
+        String fileSafeName = GameSaveManager.toFileSafeName(displayName);
+        GameSaveData saveData = board.captureState(displayName, fileSafeName);
+        try {
+            GameSaveManager.saveGame(saveData);
+            return true;
+        } catch (IOException exception) {
+            System.err.println("Failed to save game: " + exception.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean loadGame(String fileSafeName) {
+        try {
+            Optional<GameSaveData> gameSaveData = GameSaveManager.loadGame(fileSafeName);
+            if (gameSaveData.isEmpty()) {
+                return false;
+            }
+            board.restoreState(gameSaveData.get());
+            viewGuiController.refreshGameBackground(board.getBoardMatrix());
+            viewGuiController.refreshBrick(board.getViewData());
+            viewGuiController.updateGameSpeed(calculateIntervalForLevel(board.getScore().getLevel()));
+            viewGuiController.onGameLoaded();
+            return true;
+        } catch (IOException | ClassNotFoundException exception) {
+            System.err.println("Failed to load game: " + exception.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public List<GameSaveMetadata> listSavedGames() {
+        return GameSaveManager.listSaves();
     }
 
     private int calculateIntervalForLevel(int level) {

@@ -48,4 +48,22 @@ public class BrickRotator {
         this.brick = brick;
         currentShape = 0;
     }
+
+    /**
+     * Gets the active brick instance.
+     *
+     * @return current brick
+     */
+    public Brick getCurrentBrick() {
+        return brick;
+    }
+
+    /**
+     * Gets the current rotation index.
+     *
+     * @return rotation index
+     */
+    public int getCurrentShapeIndex() {
+        return currentShape;
+    }
 }

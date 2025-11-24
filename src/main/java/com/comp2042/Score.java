@@ -65,6 +65,24 @@ public final class Score {
     }
 
     /**
+     * Applies the persisted score-related state for a loaded game.
+     *
+     * @param scoreValue    stored score
+     * @param lines         stored lines cleared
+     * @param levelValue    stored level
+     * @param highScoreValue stored high score
+     */
+    public void applyState(int scoreValue, int lines, int levelValue, int highScoreValue) {
+        score.setValue(Math.max(0, scoreValue));
+        linesCleared.setValue(Math.max(0, lines));
+        level.setValue(Math.max(1, levelValue));
+        int persistedHighScore = Math.max(highScoreValue, HighScoreStorage.loadHighScore());
+        int resolvedHighScore = Math.max(persistedHighScore, scoreValue);
+        highScore.setValue(resolvedHighScore);
+        newHighScoreAchieved = scoreValue >= resolvedHighScore && scoreValue > persistedHighScore;
+    }
+
+    /**
      * Resets the score to 0.
      */
     public void reset() {

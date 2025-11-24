@@ -1,5 +1,7 @@
 package com.comp2042;
 
+import com.comp2042.save.GameSaveManager;
+import com.comp2042.save.GameSaveMetadata;
 import com.comp2042.util.ColorMapper;
 import com.comp2042.util.GameConstants;
 import javafx.animation.KeyFrame;
@@ -13,7 +15,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -24,6 +30,8 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -75,6 +83,8 @@ public class GuiController implements Initializable {
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+
+    private boolean startupPromptDisplayed;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -150,6 +160,35 @@ public class GuiController implements Initializable {
         timeLine.setCycleCount(Timeline.INDEFINITE);
         timeLine.play();
     }
+
+    /**
+     * Displays a startup dialog that lets the player choose between a new game or loading a save.
+     */
+    public void promptForStartupChoice() {
+        if (startupPromptDisplayed || eventListener == null) {
+            return;
+        }
+        startupPromptDisplayed = true;
+        Platform.runLater(() -> {
+            boolean wasPaused = pauseForDialog();
+            ChoiceDialog<String> dialog = new ChoiceDialog<>("New Game", List.of("New Game", "Load Save"));
+            dialog.setTitle("Start Tetris");
+            dialog.setHeaderText("Choose how you would like to begin");
+            dialog.setContentText("Select an option:");
+            Optional<String> choice = dialog.showAndWait();
+            if (choice.isPresent() && "Load Save".equals(choice.get())) {
+                boolean loaded = showLoadSelectionDialog();
+                if (!loaded) {
+                    eventListener.createNewGame();
+                    onGameLoaded();
+                }
+            } else {
+                eventListener.createNewGame();
+                onGameLoaded();
+            }
+            resumeAfterDialog(wasPaused);
+        });
+    }
     
     /**
      * Updates the brick panel position.
@@ -185,16 +224,14 @@ public class GuiController implements Initializable {
      * @param brick brick data
      */
     public void refreshBrick(ViewData brick) {
-        if (!isPause.getValue()) {
-            updateBrickPanelPosition(brick);
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
-                }
+        updateBrickPanelPosition(brick);
+        for (int i = 0; i < brick.getBrickData().length; i++) {
+            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
+                setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
             }
-            // Update next brick preview
-            refreshNextBrickDisplay(brick);
         }
+        // Update next brick preview
+        refreshNextBrickDisplay(brick);
     }
 
     /**
@@ -458,6 +495,63 @@ public class GuiController implements Initializable {
     }
 
     /**
+     * Saves the current game state after asking the user for a save name.
+     *
+     * @param actionEvent action event
+     */
+    @FXML
+    public void saveGame(ActionEvent actionEvent) {
+        if (eventListener == null) {
+            return;
+        }
+        boolean wasPaused = pauseForDialog();
+        TextInputDialog dialog = new TextInputDialog(GameSaveManager.generateDefaultDisplayName());
+        dialog.setTitle("Save Game");
+        dialog.setHeaderText("Enter a name for your save");
+        dialog.setContentText("Save name:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> {
+            String trimmedName = name.trim();
+            if (trimmedName.isEmpty()) {
+                showErrorAlert("Invalid Name", "Save name cannot be empty.");
+                return;
+            }
+            String fileSafeName = GameSaveManager.toFileSafeName(trimmedName);
+            if (GameSaveManager.saveExists(fileSafeName)) {
+                Alert overwriteAlert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "A save with this name already exists. Overwrite it?",
+                        ButtonType.CANCEL,
+                        ButtonType.OK);
+                overwriteAlert.setTitle("Overwrite Existing Save");
+                overwriteAlert.setHeaderText("Confirm overwrite");
+                Optional<ButtonType> confirmation = overwriteAlert.showAndWait();
+                if (confirmation.isEmpty() || confirmation.get() != ButtonType.OK) {
+                    showInformationAlert("Save Cancelled", "Existing save was not overwritten.");
+                    return;
+                }
+            }
+            boolean success = eventListener.saveGame(trimmedName);
+            if (success) {
+                showInformationAlert("Game Saved", "Progress saved as \"" + trimmedName + "\".");
+            } else {
+                showErrorAlert("Save Failed", "An unexpected error prevented saving.");
+            }
+        });
+        resumeAfterDialog(wasPaused);
+        gamePanel.requestFocus();
+    }
+
+    /**
+     * Resets overlays and focus after a game has been loaded.
+     */
+    public void onGameLoaded() {
+        gameOverPanel.setVisible(false);
+        isGameOver.setValue(false);
+        showPauseIndicator(false);
+        gamePanel.requestFocus();
+    }
+
+    /**
      * Shows or hides the pause indicator label.
      *
      * @param visible true to show, false to hide
@@ -466,5 +560,57 @@ public class GuiController implements Initializable {
         if (pauseLabel != null) {
             pauseLabel.setVisible(visible);
         }
+    }
+
+    private boolean showLoadSelectionDialog() {
+        List<GameSaveMetadata> saves = eventListener.listSavedGames();
+        if (saves.isEmpty()) {
+            showInformationAlert("No Saves Found", "You have not created any saves yet.");
+            return false;
+        }
+        ChoiceDialog<GameSaveMetadata> dialog = new ChoiceDialog<>(saves.get(0), saves);
+        dialog.setTitle("Load Game");
+        dialog.setHeaderText("Select a saved game to load");
+        dialog.setContentText("Saved games:");
+        Optional<GameSaveMetadata> selected = dialog.showAndWait();
+        if (selected.isEmpty()) {
+            return false;
+        }
+        boolean success = eventListener.loadGame(selected.get().getFileSafeName());
+        if (!success) {
+            showErrorAlert("Load Failed", "Unable to load the selected save.");
+        }
+        return success;
+    }
+
+    private boolean pauseForDialog() {
+        boolean alreadyPaused = isPause.getValue();
+        if (!alreadyPaused && timeLine != null) {
+            timeLine.pause();
+            isPause.setValue(true);
+        }
+        showPauseIndicator(false);
+        return alreadyPaused;
+    }
+
+    private void resumeAfterDialog(boolean wasPaused) {
+        if (!wasPaused && timeLine != null) {
+            timeLine.play();
+            isPause.setValue(false);
+        }
+    }
+
+    private void showInformationAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.showAndWait();
     }
 }

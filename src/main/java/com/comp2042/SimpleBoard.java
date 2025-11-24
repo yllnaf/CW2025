@@ -1,11 +1,13 @@
 package com.comp2042;
 
 import com.comp2042.logic.bricks.Brick;
-import com.comp2042.logic.bricks.BrickGenerator;
+import com.comp2042.logic.bricks.BrickFactory;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
+import com.comp2042.save.GameSaveData;
 import com.comp2042.util.GameConstants;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * Game board implementation class responsible for managing game state, brick movement and clearing logic.
@@ -15,7 +17,7 @@ public class SimpleBoard implements Board {
 
     private final int width;
     private final int height;
-    private final BrickGenerator brickGenerator;
+    private final RandomBrickGenerator brickGenerator;
     private final BrickRotator brickRotator;
     private int[][] currentGameMatrix;
     private Point currentOffset;
@@ -142,5 +144,54 @@ public class SimpleBoard implements Board {
         currentGameMatrix = new int[width][height];
         score.reset();
         createNewBrick();
+    }
+
+    /**
+     * Captures the current game state for persistence.
+     *
+     * @param displayName user provided save name
+     * @param fileSafeName sanitized file name
+     * @return save data snapshot
+     */
+    public GameSaveData captureState(String displayName, String fileSafeName) {
+        int[][] boardCopy = MatrixOperations.copy(currentGameMatrix);
+        String currentBrickType = BrickFactory.getTypeName(brickRotator.getCurrentBrick());
+        List<String> queuedTypes = brickGenerator.exportQueuedBrickTypes();
+        int offsetX = currentOffset != null ? (int) currentOffset.getX() : GameConstants.INITIAL_BRICK_X;
+        int offsetY = currentOffset != null ? (int) currentOffset.getY() : GameConstants.INITIAL_BRICK_Y;
+
+        return GameSaveData.builder()
+                .displayName(displayName)
+                .fileSafeName(fileSafeName)
+                .savedAt(System.currentTimeMillis())
+                .boardMatrix(boardCopy)
+                .currentOffset(offsetX, offsetY)
+                .currentBrickType(currentBrickType)
+                .currentRotationIndex(brickRotator.getCurrentShapeIndex())
+                .queuedBrickTypes(queuedTypes)
+                .scoreValue(score.getValue())
+                .linesCleared(score.getLinesCleared())
+                .level(score.getLevel())
+                .highScoreValue(score.getHighScore())
+                .build();
+    }
+
+    /**
+     * Restores the board state from persisted data.
+     *
+     * @param saveData saved state
+     */
+    public void restoreState(GameSaveData saveData) {
+        currentGameMatrix = MatrixOperations.copy(saveData.getBoardMatrix());
+        currentOffset = new Point(saveData.getCurrentOffsetX(), saveData.getCurrentOffsetY());
+        Brick loadedBrick = BrickFactory.createBrick(saveData.getCurrentBrickType());
+        brickRotator.setBrick(loadedBrick);
+        brickRotator.setCurrentShape(saveData.getCurrentRotationIndex());
+        brickGenerator.importQueuedBrickTypes(saveData.getQueuedBrickTypes());
+        score.applyState(
+                saveData.getScoreValue(),
+                saveData.getLinesCleared(),
+                saveData.getLevel(),
+                saveData.getHighScoreValue());
     }
 }
