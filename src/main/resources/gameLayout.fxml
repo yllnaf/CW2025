@@ -25,37 +25,41 @@
     <Label fx:id="pauseLabel" text="PAUSED" layoutX="80" layoutY="200"
            styleClass="pauseLabelStyle" visible="false"/>
     
-    <!-- Score and lines display area -->
-    <HBox layoutX="280" layoutY="10" spacing="15">
-        <VBox spacing="5">
-            <Label text="SCORE" styleClass="scoreLabelStyle"/>
-            <Label fx:id="scoreLabel" text="0" styleClass="scoreValueStyle"/>
-        </VBox>
-        <VBox spacing="5">
-            <Label text="LINES" styleClass="scoreLabelStyle"/>
-            <Label fx:id="linesLabel" text="0" styleClass="scoreValueStyle"/>
-        </VBox>
-        <VBox spacing="5">
-            <Label text="LEVEL" styleClass="scoreLabelStyle"/>
-            <Label fx:id="levelLabel" text="1" styleClass="scoreValueStyle"/>
-        </VBox>
-        <VBox spacing="5">
-            <Label text="BEST" styleClass="scoreLabelStyle"/>
-            <Label fx:id="highScoreLabel" text="0" styleClass="scoreValueStyle"/>
-        </VBox>
-    </HBox>
+    <!-- Score, lines, level, best display area -->
+    <VBox layoutX="255" layoutY="10" spacing="12">
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <VBox spacing="5">
+                <Label text="SCORE" styleClass="scoreLabelStyle"/>
+                <Label fx:id="scoreLabel" text="0" styleClass="scoreValueStyle"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="LINES" styleClass="scoreLabelStyle"/>
+                <Label fx:id="linesLabel" text="0" styleClass="scoreValueStyle"/>
+            </VBox>
+        </HBox>
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <VBox spacing="5">
+                <Label text="LEVEL" styleClass="scoreLabelStyle"/>
+                <Label fx:id="levelLabel" text="1" styleClass="scoreValueStyle"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="BEST" styleClass="scoreLabelStyle"/>
+                <Label fx:id="highScoreLabel" text="0" styleClass="scoreValueStyle"/>
+            </VBox>
+        </HBox>
+    </VBox>
     
     <!-- Next brick preview area - positioned below score display -->
-    <VBox layoutX="285" layoutY="70" spacing="5">
+    <VBox layoutX="260" layoutY="130" spacing="5">
         <Label text="NEXT" styleClass="scoreLabelStyle"/>
         <GridPane fx:id="nextBrickPanel" hgap="1" vgap="1" styleClass="nextBrick"/>
     </VBox>
 
     <!-- Control buttons -->
-    <VBox layoutX="295" layoutY="190" spacing="10">
-        <Button text="SAVE" onAction="#saveGame" styleClass="controlButton"/>
-        <Button text="DELETE" onAction="#deleteSave" styleClass="controlButton"/>
-        <Button text="EXIT" onAction="#exitGame" styleClass="controlButton"/>
+    <VBox layoutX="255" layoutY="260" spacing="10">
+        <Button text="SAVE" onAction="#saveGame" styleClass="controlButton" prefWidth="90"/>
+        <Button text="DELETE" onAction="#deleteSave" styleClass="controlButton" prefWidth="90"/>
+        <Button text="EXIT" onAction="#exitGame" styleClass="controlButton" prefWidth="90"/>
     </VBox>
     
     <stylesheets>

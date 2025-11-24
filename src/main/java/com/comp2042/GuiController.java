@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -171,7 +172,8 @@ public class GuiController implements Initializable {
         startupPromptDisplayed = true;
         Platform.runLater(() -> {
             boolean wasPaused = pauseForDialog();
-            ChoiceDialog<String> dialog = new ChoiceDialog<>("New Game", List.of("New Game", "Load Save"));
+            ChoiceDialog<String> dialog = new ChoiceDialog<>("New Game",
+                    FXCollections.observableArrayList("New Game", "Load Save"));
             dialog.setTitle("Start Tetris");
             dialog.setHeaderText("Choose how you would like to begin");
             dialog.setContentText("Select an option:");
@@ -525,7 +527,7 @@ public class GuiController implements Initializable {
                 overwriteAlert.setTitle("Overwrite Existing Save");
                 overwriteAlert.setHeaderText("Confirm overwrite");
                 Optional<ButtonType> confirmation = overwriteAlert.showAndWait();
-                if (confirmation.isEmpty() || confirmation.get() != ButtonType.OK) {
+                if (!confirmation.isPresent() || confirmation.get() != ButtonType.OK) {
                     showInformationAlert("Save Cancelled", "Existing save was not overwritten.");
                     return;
                 }
