@@ -27,6 +27,7 @@ import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -90,7 +91,8 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
-    private boolean startupPromptDisplayed;
+    @FXML
+    private VBox startupOverlay;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -169,33 +171,17 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * Displays a startup dialog that lets the player choose between a new game or loading a save.
+     * Shows the startup guide overlay and pauses the timeline until the player chooses an action.
      */
-    public void promptForStartupChoice() {
-        if (startupPromptDisplayed || eventListener == null) {
-            return;
+    public void showStartupGuide() {
+        showStartupOverlay(true);
+        if (timeLine != null) {
+            timeLine.pause();
         }
-        startupPromptDisplayed = true;
-        Platform.runLater(() -> {
-            boolean wasPaused = pauseForDialog();
-            ChoiceDialog<String> dialog = new ChoiceDialog<>("New Game",
-                    FXCollections.observableArrayList("New Game", "Load Save"));
-            dialog.setTitle("Start Tetris");
-            dialog.setHeaderText("Choose how you would like to begin");
-            dialog.setContentText("Select an option:");
-            Optional<String> choice = dialog.showAndWait();
-            if (choice.isPresent() && "Load Save".equals(choice.get())) {
-                boolean loaded = showLoadSelectionDialog();
-                if (!loaded) {
-                    eventListener.createNewGame();
-                    onGameLoaded();
-                }
-            } else {
-                eventListener.createNewGame();
-                onGameLoaded();
-            }
-            resumeAfterDialog(wasPaused);
-        });
+        isPause.setValue(true);
+        isGameOver.setValue(false);
+        updatePauseButtonText();
+        showPauseIndicator(false);
     }
     
     /**
@@ -446,6 +432,7 @@ public class GuiController implements Initializable {
      * @param actionEvent action event (can be null)
      */
     public void newGame(ActionEvent actionEvent) {
+        showStartupOverlay(false);
         timeLine.stop();
         gameOverPanel.setVisible(false);
         eventListener.createNewGame();
@@ -568,6 +555,7 @@ public class GuiController implements Initializable {
         boolean loaded = showLoadSelectionDialog();
         resumeAfterDialog(wasPaused);
         if (loaded) {
+            showStartupOverlay(false);
             updatePauseButtonText();
         }
         gamePanel.requestFocus();
@@ -625,6 +613,7 @@ public class GuiController implements Initializable {
         gameOverPanel.setVisible(false);
         isGameOver.setValue(false);
         showPauseIndicator(false);
+        showStartupOverlay(false);
         updatePauseButtonText();
         gamePanel.requestFocus();
     }
@@ -637,6 +626,13 @@ public class GuiController implements Initializable {
     private void showPauseIndicator(boolean visible) {
         if (pauseLabel != null) {
             pauseLabel.setVisible(visible);
+        }
+    }
+
+    private void showStartupOverlay(boolean visible) {
+        if (startupOverlay != null) {
+            startupOverlay.setVisible(visible);
+            startupOverlay.setManaged(visible);
         }
     }
 

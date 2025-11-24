@@ -25,6 +25,14 @@
     <Label fx:id="pauseLabel" text="PAUSED" layoutX="80" layoutY="200"
            styleClass="pauseLabelStyle" visible="false"/>
     
+    <!-- Startup guide overlay -->
+    <VBox fx:id="startupOverlay" layoutX="25" layoutY="200" spacing="10"
+          alignment="CENTER" styleClass="startupPanel">
+        <Label text="WELCOME TO TETRIS" styleClass="scoreLabelStyle" wrapText="true" maxWidth="160"/>
+        <Label text="Press NEW to start a fresh game." styleClass="startupText" wrapText="true" maxWidth="160"/>
+        <Label text="Press LOAD to resume your progress." styleClass="startupText" wrapText="true" maxWidth="160"/>
+    </VBox>
+
     <!-- Score, lines, level, best display area -->
     <VBox layoutX="255" layoutY="10" spacing="12">
         <HBox spacing="15" alignment="CENTER_LEFT">

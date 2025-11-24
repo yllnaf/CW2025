@@ -36,7 +36,7 @@ public class GameController implements InputEventListener {
         board.getScore().levelProperty().addListener((observable, oldValue, newValue) ->
                 viewGuiController.updateGameSpeed(calculateIntervalForLevel(newValue.intValue())));
         viewGuiController.updateGameSpeed(calculateIntervalForLevel(board.getScore().getLevel()));
-        viewGuiController.promptForStartupChoice();
+        viewGuiController.showStartupGuide();
     }
 
     /**
